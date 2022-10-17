@@ -1,8 +1,15 @@
 library(shiny)
+options(shiny.autoreload = TRUE)
+
+
 library(shinythemes)
+
+
 
 source("tabs/dataset.R")
 source("tabs/descriptive.R")
+source("tabs/overview.R")
+source("tabs/preprocessing.R")
 
 shinyUI(fluidPage(
 
@@ -20,18 +27,18 @@ shinyUI(fluidPage(
 
   # # tabs
   tabsetPanel(
-    id="step-tabs",
+    id="step_tabs",
 
     tabPanel("Dataset", dataset_tab), 
     tabPanel("Overview"),
     tabPanel("Descriptive Analysis", descriptive_tab),
-    tabPanel("Pretreatment"),
+    tabPanel("Preprocessing", preprocessing_tab),
     tabPanel("Training"),
     tabPanel("Evaluation")
   
   ),
 
-  actionButton("next", "Next")
+  actionButton("next_btn", "Next")
   
 
   ))
