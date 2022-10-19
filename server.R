@@ -2,6 +2,8 @@ library(shiny)
 source("tabs/dataset.R")
 source("tabs/preprocessing.R")
 source("tabs/descriptive.R")
+source("tabs/overview.R")
+
 
 
 shinyServer(function(input, output) {
@@ -12,12 +14,11 @@ shinyServer(function(input, output) {
     session <- shiny::getDefaultReactiveDomain()
     # switch statement in R is f***ing weird
     switch(input$step_tabs, 
-      "Dataset" = {descriptive_analysis_action(input, output,session)},
-      "Overview" = {overview_action(input, output)},
-      "Descriptive Analysis" = {descriptive_analysis_action(input, output,session)},
-      "Pretreatment" = {pretreatment_action(input, output)},
-      "Training" = {training_action(input, output)},
-      "Evaluation" = {evaluation_action(input, output)}
+      "Dataset" = {overview_action(input, output)},
+      "Overview" = {descriptive_analysis_action(input, output)},
+      "Descriptive Analysis" = {preprocess_action(input, output)},
+      "Pretreatment" = {training_action(input, output)},
+      "Training" = {evaluation_action(input, output)}
     )
   })
 

@@ -30,7 +30,7 @@ shinyUI(fluidPage(
     id="step_tabs",
 
     tabPanel("Dataset", dataset_tab), 
-    tabPanel("Overview"),
+    tabPanel("Overview", overview_tab),
     tabPanel("Descriptive Analysis", descriptive_tab),
     tabPanel("Preprocessing", preprocessing_tab),
     tabPanel("Training"),
