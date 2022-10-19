@@ -38,7 +38,19 @@ shinyUI(fluidPage(
   
   ),
 
-  actionButton("next_btn", "Next")
+  actionButton("next_btn", "Next"),
+
+  tags$script("
+
+      $('#step_tabs li').addClass('disabled')
+
+      $('#step_tabs li').click(function () {
+        if ($(this).hasClass('disabled')) {
+            return false;
+        }
+    });
+    
+  ")
   
 
   ))
