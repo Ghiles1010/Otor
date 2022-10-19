@@ -15,7 +15,7 @@ shinyServer(function(input, output) {
     # switch statement in R is f***ing weird
     switch(input$step_tabs, 
       "Dataset" = {overview_action(input, output)},
-      "Overview" = {descriptive_analysis_action(input, output)},
+      "Overview" = {descriptive_analysis_action(input, output,session)},
       "Descriptive Analysis" = {preprocess_action(input, output)},
       "Pretreatment" = {training_action(input, output)},
       "Training" = {evaluation_action(input, output)}
