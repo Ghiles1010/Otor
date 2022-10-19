@@ -1,26 +1,26 @@
-plotBivariateCloudPoints <- function(first_feature, second_feature)
+plotBivariateCloudPoints <- function(first_feature, second_feature,data)
 {
-    if (! is.numeric(df[, first_feature]) & ! is.numeric(df[, second_feature]))
+    if (! is.numeric(data[, first_feature]) & ! is.numeric(data[, second_feature]))
     {
-        p <- ggplot(df, aes_string(x = first_feature , fill=second_feature)) +
+        p <- ggplot(data, aes_string(x = first_feature , fill=second_feature)) +
             geom_bar() +
             theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
 
         return(ggplotly(p))
     }
-    else if( is.numeric(df[, first_feature]) &  is.numeric(df[, second_feature]))
+    else if( is.numeric(data[, first_feature]) &  is.numeric(data[, second_feature]))
     {
         p <- plot_ly(
-            x = df[, first_feature],
-            y = df[, second_feature],
+            x = data[, first_feature],
+            y = data[, second_feature],
             name = paste(second_feature, ' according to ', first_feature),
             type = 'scatter',
             mode = 'markers'
         )
 
         p <- p %>% add_trace(
-            x = df[, first_feature],
-            y = fitted(lm(df[, second_feature]~df[, first_feature])),
+            x = data[, first_feature],
+            y = fitted(lm(data[, second_feature]~data[, first_feature])),
             mode = 'lines',
             name = 'Linear model'
         )
@@ -28,15 +28,15 @@ plotBivariateCloudPoints <- function(first_feature, second_feature)
         return(p)
     }
     else if(
-        (is.numeric(df[, first_feature]) & !is.numeric(df[, second_feature]))
+        (is.numeric(data[, first_feature]) & !is.numeric(data[, second_feature]))
         |
-        (is.numeric(df[, second_feature]) & !is.numeric(df[, first_feature]))
+        (is.numeric(data[, second_feature]) & !is.numeric(data[, first_feature]))
     )
     {
-        xlabel <- if(is.numeric(df[, first_feature])) first_feature else second_feature
-        ylabel <- if(is.numeric(df[, first_feature])) second_feature else first_feature
+        xlabel <- if(is.numeric(data[, first_feature])) first_feature else second_feature
+        ylabel <- if(is.numeric(data[, first_feature])) second_feature else first_feature
 
-        p <- ggplot(data=df)+
+        p <- ggplot(data=data)+
             geom_histogram(mapping = aes_string(xlabel, fill=ylabel), bins = 10)+
             xlab(label = xlabel)+
             ylab(label="Frequency")+
@@ -46,37 +46,37 @@ plotBivariateCloudPoints <- function(first_feature, second_feature)
     }
 }
 
-computeCorrelation <- function(first_feature, second_feature) {
+computeCorrelation <- function(first_feature, second_feature,data) {
     if(
-        ! is.numeric(df[, first_feature])
+        ! is.numeric(data[, first_feature])
             |
-            ! is.numeric(df[, second_feature])
+            ! is.numeric(data[, second_feature])
     ) return(NULL)
 
     covariance <- cov(
-        df[, first_feature],
-        df[, second_feature]
+        data[, first_feature],
+        data[, second_feature]
     )
 
-    first_variance <- var(df[, first_feature])
-    second_variance <- var(df[, second_feature])
+    first_variance <- var(data[, first_feature])
+    second_variance <- var(data[, second_feature])
 
     coeff_correlation.tmp <- covariance / (sqrt(first_variance * second_variance))
 
     paste('Coeff de corrélation linéaire = ', round(coeff_correlation.tmp, digits=2))
 }
 
-bivariateBoxPlot <- function(first_feature, second_feature) {
+bivariateBoxPlot <- function(first_feature, second_feature,data) {
     if(
-        is.numeric(df[, first_feature])
+        is.numeric(data[, first_feature])
             &
-            is.numeric(df[, second_feature])
+            is.numeric(data[, second_feature])
     )
     {
         columns <- c(first_feature, second_feature)
 
         # Reshape data()
-        data.stack <- melt(df[, columns], measure.vars = columns)
+        data.stack <- melt(data[, columns], measure.vars = columns)
 
         p <- qplot(
             x = data.stack[,1],
@@ -90,29 +90,29 @@ bivariateBoxPlot <- function(first_feature, second_feature) {
         return(ggplotly(p))
     }
     else if(
-        is.numeric(df[, first_feature])
+        is.numeric(data[, first_feature])
             &
-            ! is.numeric(df[, second_feature])
+            ! is.numeric(data[, second_feature])
     )
     {
         p <- qplot(
-            x = df[, second_feature],
-            y = df[, first_feature],
+            x = data[, second_feature],
+            y = data[, first_feature],
             xlab = "Modalités",
             ylab = "Mesures",
             geom= "boxplot",
-            fill=df[, second_feature]
+            fill=data[, second_feature]
         ) + theme(axis.text.x = element_text(angle=90,hjust=1,vjust=0.5))
 
         return(ggplotly(p))
     }
     else if (
-        ! is.numeric(df[, first_feature])
+        ! is.numeric(data[, first_feature])
             &
-            is.numeric(df[, second_feature])
+            is.numeric(data[, second_feature])
     )
     {
-        p <- ggplot(data=df) +
+        p <- ggplot(data=data) +
             geom_boxplot(mapping = aes_string(first_feature, second_feature)) +
             xlab(label = first_feature) +
             ylab(label = second_feature) +

@@ -1,14 +1,14 @@
-plotOccurences <- function(column)
+plotOccurences <- function(column,data)
 {
-    if (is.numeric(df[, column]))
+    if (is.numeric(data[, column]))
     {
-        fig <- plot_ly(y = df[, column], type = 'box')
+        fig <- plot_ly(y = data[, column], type = 'box')
         fig <- fig %>% layout(title = paste('Boxplot of', column, sep = ' '))
         return(fig)
     }
     else
     {
-        numbers <- as.data.frame(table(df[, column]))
+        numbers <- as.data.frame(table(data[, column]))
 
         fig <- plot_ly(x = numbers[, 'Var1'], y = numbers[, 'Freq'], type = 'bar')
         fig <- fig %>% layout(title = paste('Barplot of', column, sep = ' '))
@@ -17,11 +17,11 @@ plotOccurences <- function(column)
     }
 }
 
-plotFrequencies <- function(column)
+plotFrequencies <- function(column,data)
 {
-    numbers <- as.data.frame(table(df[, column]))
+    numbers <- as.data.frame(table(data[, column]))
 
-    if (is.numeric(df[, column]))
+    if (is.numeric(data[, column]))
     {
         fig <- plot_ly(y = numbers[, 'Freq'], x = numbers[, 'Var1'], type = 'bar')
         fig <- fig %>% layout(title = paste('Histogram of', column, sep = ' '))
@@ -37,12 +37,12 @@ plotFrequencies <- function(column)
     }
 }
 
-plotCumulativeOccurences <- function(column)
+plotCumulativeOccurences <- function(column,data)
 {
-    if(! is.numeric(df[, column])) return(NULL)
+    if(! is.numeric(data[, column])) return(NULL)
 
     # Getting data from histogram
-    tmp.hist <- hist( df[, column], plot = FALSE,
+    tmp.hist <- hist( data[, column], plot = FALSE,
                       right = FALSE)
 
     fig <- plot_ly(x = tmp.hist$breaks[-1], y = cumsum(tmp.hist$counts), mode = 'lines+markers')
