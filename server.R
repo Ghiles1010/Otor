@@ -1,20 +1,26 @@
 library(shiny)
+source("tabs/dataset.R")
+source("tabs/preprocessing.R")
+source("tabs/descriptive.R")
+source("tabs/overview.R")
 
-# Define server logic required to generate and plot a random distribution
+
+
 shinyServer(function(input, output) {
-   
-  # Expression that generates a plot of the distribution. The expression
-  # is wrapped in a call to renderPlot to indicate that:
-  #
-  #  1) It is "reactive" and therefore should be automatically 
-  #     re-executed when inputs change
-  #  2) Its output type is a plot 
-  #
-  output$distPlot <- renderPlot({
-        
-    # generate an rnorm distribution and plot it
-    dist <- rnorm(input$obs)
-    hist(dist)
+
+
+  # read dataset on click next
+  observeEvent(input$next_btn, {
+    session <- shiny::getDefaultReactiveDomain()
+    # switch statement in R is f***ing weird
+    switch(input$step_tabs, 
+      "Dataset" = {overview_action(input, output)},
+      "Overview" = {descriptive_analysis_action(input, output,session)},
+      "Descriptive Analysis" = {preprocess_action(input, output)},
+      "Pretreatment" = {training_action(input, output)},
+      "Training" = {evaluation_action(input, output)}
+    )
   })
+
   
 })
