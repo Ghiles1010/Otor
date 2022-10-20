@@ -2,6 +2,7 @@ library(shiny)
 library(shinythemes)
 
 source("tabs/dataset.R")
+source("tabs/training.R")
 
 shinyUI(fluidPage(
 
@@ -25,7 +26,7 @@ shinyUI(fluidPage(
     tabPanel("Overview"),
     tabPanel("Descriptive Analysis"),
     tabPanel("Pretreatment"),
-    tabPanel("Training"),
+    tabPanel("Training",training_tab),
     tabPanel("Evaluation")
   
   ),
