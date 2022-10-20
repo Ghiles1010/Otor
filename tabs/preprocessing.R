@@ -3,6 +3,7 @@ library("caret")
 
 preprocessing_tab <- 
     fluidRow(
+        class = "custom-tab",
         column(12, 
             h3("Preprocessing"),
         ),

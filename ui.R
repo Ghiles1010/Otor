@@ -38,7 +38,13 @@ shinyUI(fluidPage(
   
   ),
 
-  actionButton("next_btn", "Next"),
+  fluidRow(
+    id="action_buttons",
+    actionButton("back_btn", "Back"),
+    actionButton("next_btn", "Next"),
+  ),
+  
+  
 
   tags$script("
 
@@ -49,7 +55,44 @@ shinyUI(fluidPage(
             return false;
         }
     });
+
+    var currentTab = 0;
+
+
+
+
+    $('#back_btn').hide()
+
+  
+
+    $('#next_btn').click(function () {
+
+        var isfileUploaded = document.getElementById('file_progress').children[0].innerHTML == 'Upload complete'
+
+        if (isfileUploaded){
+          if (currentTab + 1 != 6){
+            currentTab ++
+            $('#back_btn').show()
+          }
+        }
+
+        
+        if(currentTab == 5 ){
+          $('#next_btn').hide()
+        }
+    })
     
+  
+  $('#back_btn').click(function () {
+    
+      currentTab --;
+      $('#next_btn').show()
+
+      if (currentTab == 0 ) {
+        $('#back_btn').hide()
+      }
+    })
+
   ")
   
 
