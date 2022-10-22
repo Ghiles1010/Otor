@@ -7,6 +7,7 @@ library(shinythemes)
 
 
 source("tabs/dataset.R")
+source("tabs/training.R")
 source("tabs/descriptive.R")
 source("tabs/overview.R")
 source("tabs/preprocessing.R")
@@ -30,10 +31,12 @@ shinyUI(fluidPage(
     id="step_tabs",
 
     tabPanel("Dataset", dataset_tab), 
+
     tabPanel("Overview", overview_tab),
     tabPanel("Descriptive Analysis", descriptive_tab),
     tabPanel("Preprocessing", preprocessing_tab),
-    tabPanel("Training"),
+    tabPanel("Training",training_tab),
+
     tabPanel("Evaluation")
   
   ),
