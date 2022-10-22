@@ -6,7 +6,7 @@ library(pROC)
 library(caret)
 library(Metrics)
 library(e1071)
-source("tabs/trainingHelper.R")
+source("logic/trainingHelper.R")
 df_encoded <- read.csv("df_encoded.csv")
 
 
@@ -76,7 +76,7 @@ training_tab <- fluidRow(
     )
 )
 
-evaluation_action <- function(input, output){
+training_action <- function(input, output){
 
 output$distPlot <- renderPlot({
     # generate an rnorm distribution and plot it

@@ -27,7 +27,7 @@ shinyServer(function(input, output) {
   # read dataset on click next
   observeEvent(input$next_btn, {
     session <- shiny::getDefaultReactiveDomain()
-    # switch statement in R is f***ing weird
+
     switch(input$step_tabs, 
       "Dataset" = {overview_action(input, output)},
       "Overview" = {descriptive_analysis_action(input, output,session)},
