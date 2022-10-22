@@ -7,6 +7,11 @@ dataset_tab <- fluidRow(
                 mainPanel(
                     tableOutput("data")
                 )
-            )
+            ),
+            # add margin
+            style = "margin-top: 10rem;"
         ),
+
+        
 )
+
