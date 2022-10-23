@@ -6,6 +6,7 @@ library(pROC)
 library(caret)
 library(Metrics)
 library(e1071)
+library(plotly)
 source("logic/trainingHelper.R")
 df_encoded <- read.csv("df_encoded.csv")
 
