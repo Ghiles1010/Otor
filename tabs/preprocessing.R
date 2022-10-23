@@ -7,6 +7,18 @@ preprocessing_tab <-
         column(12, 
             h3("Preprocessing"),
         ),
+
+        #  select target column
+        column(12, 
+            h4("Select target column"),
+            selectInput(
+                "target_column",
+                label = "Target column",
+                choices = NULL,
+                selected = 1
+            )
+        ),
+
         column(12, 
             h4("Cleaning"),
             h6("Droping columns containing 60% missing values and high dimensional categorical variables")
@@ -187,8 +199,9 @@ preprocess <- function(data){
 
 
 preprocess_action <- function(input, output){
-    # read dataset on click next
+    session <- shiny::getDefaultReactiveDomain()
 
+    # read dataset on click next
     data <- read.csv(input$file$datapath)
 
     preprocess_result <- preprocess(data)
@@ -196,11 +209,17 @@ preprocess_action <- function(input, output){
     data <- preprocess_result$data
     output$dropped_columns <- renderText(paste(preprocess_result$dropped_columns, collapse = ", "))
 
+    print(data)
+
+    # populate selectInput with column names
+    updateSelectInput(session, "target_column", choices = names(data))
+
     output$final_dataset <- renderPrint(head(data))
 
     # select next tab
-    session <- shiny::getDefaultReactiveDomain()
     updateTabsetPanel(session, "step_tabs", selected = "Preprocessing")
+
+    return(list(data = data))#, target_column=input$target_column))
     
 }
 

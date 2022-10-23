@@ -6,7 +6,7 @@ source("tabs/preprocessing.R")
 source("tabs/descriptive.R")
 source("tabs/overview.R")
 
-
+info <- NULL
 
 shinyServer(function(input, output) {
 
@@ -30,7 +30,7 @@ shinyServer(function(input, output) {
     switch(input$step_tabs, 
       "Dataset" = {overview_action(input, output)},
       "Overview" = {descriptive_analysis_action(input, output,session)},
-      "Descriptive Analysis" = {preprocess_action(input, output)},
+      "Descriptive Analysis" = {info <- preprocess_action(input, output)},
       "Pretreatment" = {training_action(input, output)},
       "Training" = {evaluation_action(input, output)}
     )
