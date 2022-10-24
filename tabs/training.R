@@ -8,15 +8,8 @@ library(Metrics)
 library(e1071)
 library(plotly)
 source("logic/trainingHelper.R")
-df_encoded <- read.csv("df_encoded.csv")
 
-binarize <- function(x) {
-    if (x < 10) {
-        return("0")
-    } else {
-        return("1")
-    }
-}
+
 
 training_tab <- fluidRow(
     tabsetPanel(
@@ -78,8 +71,6 @@ training_tab <- fluidRow(
 
 training_action <- function(input, output, session){
 
-    # select next tab
-    session <- shiny::getDefaultReactiveDomain()
     updateTabsetPanel(session, "step_tabs", selected = "Training")
 
     output$distPlot <- renderPlot({
@@ -90,7 +81,7 @@ training_action <- function(input, output, session){
 
   # KNN Accuracy boxplot
   output$accuracyBoxplot <- renderPlotly({
-    modelOutput <- trainModel("KNN", df_encoded, "G3", input)
+    modelOutput <- trainModel("KNN", session$userData$info$df, session$userData$info$target, input)
 
     output$table_KNN <- renderTable(modelOutput$df_table)
     return(renderValidationGraph(modelOutput$validation, "KNN validation accuracy (10-fold CV)"))
@@ -98,14 +89,14 @@ training_action <- function(input, output, session){
 
   # KNN ROC Curve plot.
   output$ROC <- renderPlot({
-    modelOutput <- trainModel("KNN", df_encoded, "G3", input)
+    modelOutput <- trainModel("KNN", session$userData$info$df, session$userData$info$target, input)
 
     return(renderRoc("KNN", modelOutput$testClass, modelOutput$data$pred))
   })
 
   # Logistic Regression BoxPlot
   output$LRBoxplotRMSE <- renderPlotly({
-    modelOutput <- trainModel("LR", df_encoded, "G3", input)
+    modelOutput <- trainModel("LR", session$userData$info$df, session$userData$info$target, input)
     # Calcul et affichage des résultas du modèle
     output$table_LR <- renderTable(modelOutput$df_table)
     return(renderValidationGraph(modelOutput$validation, "LR Accuracy (10-fold CV)"))
@@ -113,14 +104,14 @@ training_action <- function(input, output, session){
 
   # LR ROC Curve plot.
   output$ROC_LR <- renderPlot({
-    modelOutput <- trainModel("LR", df_encoded, "G3", input)
+    modelOutput <- trainModel("LR", session$userData$info$df, session$userData$info$target, input)
 
     return(renderRoc("LR", modelOutput$testClass, modelOutput$data$pred))
   })
 
   # SVM Accuracy box plot
   output$SVMBoxPlot <- renderPlotly({
-    modelOutput <- trainModel("SVM", df_encoded, "G3", input)
+    modelOutput <- trainModel("SVM", session$userData$info$df, session$userData$info$target, input)
 
     output$table_SVM <- renderTable(modelOutput$df_table)
     return(renderValidationGraph(modelOutput$validation, "SVM validation accuracy (10-fold CV)"))
@@ -128,7 +119,7 @@ training_action <- function(input, output, session){
 
   # SVM ROC Curve plot.
   output$ROC_SVM <- renderPlot({
-    modelOutput <- trainModel("SVM", df_encoded, "G3", input)
+    modelOutput <- trainModel("SVM", session$userData$info$df, session$userData$info$target, input)
 
     return(renderRoc("SVM", modelOutput$testClass, modelOutput$data$pred))
   })

@@ -11,7 +11,9 @@ source("tabs/overview.R")
 session <- NULL
 
 shinyServer(function(input, output) {
+  session <<- shiny::getDefaultReactiveDomain()
 
+  session$userData$info <<- list(df=NULL, target=NULL) 
   # read dataset on click back
   observeEvent(input$back_btn, {
     
@@ -23,16 +25,13 @@ shinyServer(function(input, output) {
     )
   })
 
+
   # read dataset on click next
   observeEvent(input$next_btn, {
     # session <- shiny::getDefaultReactiveDomain()
 
-    session <<- shiny::getDefaultReactiveDomain()
-
-    session$userData$info <<- list(df=NULL, target=NULL) 
-
     switch(input$step_tabs, 
-      "Dataset" = {overview_action(input, output)},
+      "Dataset" = {overview_action(input, output,session)},
       # "Dataset" = {preprocess_action(input, output, session)},
       "Overview" = {descriptive_analysis_action(input, output, session)},
       "Descriptive Analysis" = {preprocess_action(input, output, session)},

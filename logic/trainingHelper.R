@@ -62,7 +62,6 @@ trainModel <- function(type, data, target, input) {
   valid <- rep(NA, 10)
   # We should remove this
 
-  data[[target]] <- sapply(data[[target]], binarize)
   data[[target]] <- as.numeric(data[[target]])
 
   for (b in 1:B)

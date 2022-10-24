@@ -12,7 +12,7 @@ overview_tab <- fluidRow(
 
 
 
-overview_action <- function(input, output){
+overview_action <- function(input, output,session){
 
     if (is.null(input$file)){
         useShinyalert()
@@ -20,7 +20,6 @@ overview_action <- function(input, output){
         return()
     }
 
-    session <- shiny::getDefaultReactiveDomain()
     updateTabsetPanel(session, "step_tabs", selected = "Overview")
 
     
