@@ -9,7 +9,14 @@ overview_tab <- fluidRow(
         )
     )
 
+potential_targets <- function(data){
+    
+    # get the name of the columns with less than 2 unique values
+    unique_values <- sapply(data, function(x) length(unique(x)))
+    potential_targets <- names(unique_values[unique_values == 2])
 
+    return(potential_targets)
+}
 
 
 overview_action <- function(input, output){
@@ -17,6 +24,18 @@ overview_action <- function(input, output){
     if (is.null(input$file)){
         useShinyalert()
         shinyalert("Error", "Please upload a dataset", type = "error")
+        return()
+    }
+
+    data <- read.csv(input$file$datapath)
+
+    possible_targets <- potential_targets(data)
+
+    if (length(possible_targets) == 0){
+        useShinyalert()
+        shinyalert("Error", "No possible target column found", type = "error",
+                   closeOnClickOutside = TRUE,
+                   callbackJS = "function(){location.reload();}")
         return()
     }
 
