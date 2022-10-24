@@ -11,7 +11,5 @@ dataset_tab <- fluidRow(
             # add margin
             style = "margin-top: 10rem;"
         ),
-
-        
 )
 

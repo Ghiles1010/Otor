@@ -73,6 +73,9 @@ descriptive_tab <-tabsetPanel(
 
 
 descriptive_analysis_action <- function(input, output, session){
+
+
+    
     # read dataset on click next
 
     data <- read.csv(input$file$datapath)
