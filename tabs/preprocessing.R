@@ -1,5 +1,6 @@
 library("caret")
 
+IS_FIRST_TIME <- TRUE
 
 preprocessing_tab <- 
     fluidRow(
@@ -57,10 +58,10 @@ separate_num_cat <- function(data){
 
     cat_cols_names <- names(cat_cols[cat_cols == TRUE])
 
-    cat_data <- data[, cat_cols_names]
+    cat_data <- as.data.frame(data[, cat_cols_names])
     numeric_cols_names <- names(cat_cols[cat_cols == FALSE])
 
-    num_data <- data[, numeric_cols_names]
+    num_data <- as.data.frame(data[, numeric_cols_names])
 
 
     return(list(num_cols=num_data, cat_cols=cat_data))
@@ -82,7 +83,7 @@ dummify <- function(data){
     # get the dummy data frame
     dummy_data <- data.frame(predict(dummy_data, newdata = cat_data))
     # merge the dummy data frame with the numeric data frame
-    data <- cbind(numeric_data, dummy_data)
+    data <- cbind.data.frame(numeric_data, dummy_data)
     return(data)
 }
 
@@ -100,7 +101,7 @@ remove_high_columns <- function(data){
     unique_values <- sapply(cat_data, function(x) length(unique(x)))
 
     # get the names of the columns with more than 6 unique values
-    high_unique_values <- names(unique_values[unique_values > 6])
+    high_unique_values <- names(unique_values[unique_values > 8])
     # remove the columns with more than 6 unique values
     data <- data[, !(names(data) %in% high_unique_values)]
     return(data)
@@ -114,13 +115,18 @@ zscore_numeric <- function(data){
     numeric_data <- numeric_cat$num_cols
     cat_data <- numeric_cat$cat_cols
 
+    # scale only the numeric columns with more than 2 unique values
+    unique_values <- sapply(numeric_data, function(x) length(unique(x)))
+    numeric_data <- numeric_data[, names(unique_values[unique_values > 2])]
+
     numeric_data <- scale(numeric_data)
-    
-    
 
-    if (ncol(cat_data) == 0) return(numeric_data)
+    # cast to data frame
+    numeric_data <- as.data.frame(numeric_data)
 
-    data <- cbind(cat_data, numeric_data)
+    # if (cat_data==NULL || ncol(cat_data) == 0) return(numeric_data)
+
+    data <- cbind.data.frame(cat_data, numeric_data)
 
     return(data)
 }
@@ -140,7 +146,7 @@ impute <- function(data){
 
     # cat_data <- sapply(cat_data, function(x) ifelse(is.na(x), names(which.max(table(x))), x))
 
-    data <- cbind(numeric_data, cat_data)
+    data <- cbind.data.frame(numeric_data, cat_data)
 
     return(data)
 }
@@ -175,10 +181,30 @@ clean <- function(data){
     return(data)
 }
 
+encode_target <- function(data, target){
 
-preprocess <- function(data){
+    # get unique values of target column
+    unique_values <- unique(data[, target])
+
+    # encode values with 0 and 1
+    data[, target] <- sapply(data[, target], function(x) ifelse(x == unique_values[1], 0, 1))
+
+    return(data)
+}
+
+
+preprocess <- function(data, target){
 
     # bug with imputing categorical columns
+
+    # store target column 
+    target_col <- as.data.frame(data[, target])
+
+    # give a name to the target column
+    names(target_col) <- target
+
+    # remove target column
+    data <- data[, !(names(data) %in% target)]
 
     # clean the data
     data <- clean(data)
@@ -188,39 +214,69 @@ preprocess <- function(data){
 
     # scale numeric columns
     data <- zscore_numeric(data)
+    
+    # add target column
+    data <- cbind.data.frame(data, target_col)
+
+    # encode target column
+    data <- encode_target(data, target)
 
     # one hot encoding  
     data <- dummify(data)
-
+    
     result <- list(data = data, dropped_columns = c("hi"))
 
     return(result)
 }
 
+potential_targets <- function(data){
+    
+    # get the name of the columns with less than 2 unique values
+    unique_values <- sapply(data, function(x) length(unique(x)))
+    potential_targets <- names(unique_values[unique_values == 2])
 
-preprocess_action <- function(input, output){
-    session <- shiny::getDefaultReactiveDomain()
+    return(potential_targets)
+}
 
+
+
+action <- function(input, output, session, selected_target){
     # read dataset on click next
     data <- read.csv(input$file$datapath)
 
-    preprocess_result <- preprocess(data)
+    if(is.null(selected_target)){
+        possible_targets <- potential_targets(data)
+        selected_target <- possible_targets[1]
+        updateSelectInput(session, "target_column", choices = possible_targets, selected = selected_target)
+    }
+
+    preprocess_result <- preprocess(data, selected_target)
 
     data <- preprocess_result$data
-    output$dropped_columns <- renderText(paste(preprocess_result$dropped_columns, collapse = ", "))
-
-    print(data)
-
-    # populate selectInput with column names
-    updateSelectInput(session, "target_column", choices = names(data))
-
+    
     output$final_dataset <- renderPrint(head(data))
 
-    # select next tab
-    updateTabsetPanel(session, "step_tabs", selected = "Preprocessing")
+    session$userData$info$df <- data
+    session$userData$info$target <- input$target_column
+}
 
-    return(list(data = data))#, target_column=input$target_column))
+
+preprocess_action <- function(input, output, session){
+
+    updateTabsetPanel(session, "step_tabs", selected = "Preprocessing")
     
+    action(input, output, session, NULL)
+
+    # observe on change target
+    observeEvent(input$target_column, {
+        # update the possible targets
+        if(IS_FIRST_TIME){
+            IS_FIRST_TIME <<- FALSE
+        }
+        else{
+            action(input, output, session, input$target_column)
+        }
+    })
 }
 
 

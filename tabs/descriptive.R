@@ -74,6 +74,7 @@ descriptive_tab <-tabsetPanel(
 
 descriptive_analysis_action <- function(input, output, session){
     # read dataset on click next
+
     data <- read.csv(input$file$datapath)
     # session <- shiny::getDefaultReactiveDomain()
     data_columns <-sort(names(data))

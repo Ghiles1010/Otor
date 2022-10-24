@@ -10,7 +10,6 @@ library(plotly)
 source("logic/trainingHelper.R")
 df_encoded <- read.csv("df_encoded.csv")
 
-
 binarize <- function(x) {
     if (x < 10) {
         return("0")
@@ -77,13 +76,17 @@ training_tab <- fluidRow(
     )
 )
 
-training_action <- function(input, output){
+training_action <- function(input, output, session){
 
-output$distPlot <- renderPlot({
-    # generate an rnorm distribution and plot it
-    dist <- rnorm(input$obs)
-    hist(dist)
-  })
+    # select next tab
+    session <- shiny::getDefaultReactiveDomain()
+    updateTabsetPanel(session, "step_tabs", selected = "Training")
+
+    output$distPlot <- renderPlot({
+        # generate an rnorm distribution and plot it
+        dist <- rnorm(input$obs)
+        hist(dist)
+    })
 
   # KNN Accuracy boxplot
   output$accuracyBoxplot <- renderPlotly({
@@ -129,9 +132,5 @@ output$distPlot <- renderPlot({
 
     return(renderRoc("SVM", modelOutput$testClass, modelOutput$data$pred))
   })
-
-# # select next tab
-#     session <- shiny::getDefaultReactiveDomain()
-#     updateTabsetPanel(session, "step_tabs", selected = "training")
 
 }

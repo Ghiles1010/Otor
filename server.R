@@ -7,33 +7,36 @@ source("tabs/preprocessing.R")
 source("tabs/descriptive.R")
 source("tabs/overview.R")
 
-info <- NULL
+# global variables
+session <- NULL
 
 shinyServer(function(input, output) {
 
   # read dataset on click back
   observeEvent(input$back_btn, {
-    session <- shiny::getDefaultReactiveDomain()
     
     switch(input$step_tabs, 
       "Overview" = {updateTabsetPanel(session, "step_tabs", selected = "Dataset")},
       "Descriptive Analysis" = {updateTabsetPanel(session, "step_tabs", selected = "Overview")},
-      "Pretreatment" = {updateTabsetPanel(session, "step_tabs", selected = "Descriptive Analysis")},
-      "Training" = {updateTabsetPanel(session, "step_tabs", selected = "Pretreatment")},
-      "Evaluation" = {updateTabsetPanel(session, "step_tabs", selected = "Training")}
+      "Preprocessing" = {updateTabsetPanel(session, "step_tabs", selected = "Descriptive Analysis")},
+      "Training" = {updateTabsetPanel(session, "step_tabs", selected = "Preprocessing")},
     )
   })
 
   # read dataset on click next
   observeEvent(input$next_btn, {
-    session <- shiny::getDefaultReactiveDomain()
+    # session <- shiny::getDefaultReactiveDomain()
+
+    session <<- shiny::getDefaultReactiveDomain()
+
+    session$userData$info <<- list(df=NULL, target=NULL) 
 
     switch(input$step_tabs, 
       "Dataset" = {overview_action(input, output)},
-      "Overview" = {descriptive_analysis_action(input, output,session)},
-      "Descriptive Analysis" = {info <- preprocess_action(input, output)},
-      "Pretreatment" = {training_action(input, output)},
-      "Training" = {evaluation_action(input, output)}
+      # "Dataset" = {preprocess_action(input, output, session)},
+      "Overview" = {descriptive_analysis_action(input, output, session)},
+      "Descriptive Analysis" = {preprocess_action(input, output, session)},
+      "Preprocessing" = {training_action(input, output, session)}
     )
   })
 

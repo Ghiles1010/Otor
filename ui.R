@@ -36,9 +36,6 @@ shinyUI(fluidPage(
     tabPanel("Descriptive Analysis", descriptive_tab),
     tabPanel("Preprocessing", preprocessing_tab),
     tabPanel("Training",training_tab),
-
-    tabPanel("Evaluation")
-  
   ),
 
   fluidRow(
@@ -80,7 +77,7 @@ shinyUI(fluidPage(
         }
 
         
-        if(currentTab == 5 ){
+        if(currentTab == 4 ){
           $('#next_btn').hide()
         }
     })
